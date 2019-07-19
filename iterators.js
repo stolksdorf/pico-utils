@@ -6,5 +6,6 @@ const construct = (obj,fn)=>Object.keys(obj).reduce((a,key)=>{const [k,v]=fn(obj
 const cluster = (obj, fn)=>Object.keys(obj).reduce((a,k)=>{const r=fn(obj[k],k);if(!a[r]){a[r]=[]};a[r].push(obj[k]);return a;},{});
 const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
 const findKey = (obj,fn)=>Object.keys(obj).find((key)=>fn(obj[key],key));
+const sample = (obj)=>obj[Object.keys(obj)[Math.floor(Object.keys(obj).length*Math.random())]];
 
 module.exports = {map,flatMap,reduce,filter,construct,cluster,times};
