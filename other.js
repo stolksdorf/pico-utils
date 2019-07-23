@@ -28,6 +28,20 @@ const set = (obj, path, value)=>{
 	return dig(obj, makePath(path));
 }
 
+const getTrace = (arg = 0)=>{
+	const stackline = (arg instanceof Error)
+		? arg.stack.split('\n')[1]
+		: (new Error()).stack.split('\n')[Number(arg) + 2];
+
+	let name, loc = stackline.replace('at ', '').trim();
+	const res = /(.*?) \((.*?)\)/.exec(loc);
+	if(res){
+		name = res[1];
+		loc = res[2];
+	}
+	const [_, file, line, col] = /(.*?):(\d*):(\d*)/.exec(loc);
+	return { file, name, line };
+}
 
 
 
