@@ -29,10 +29,10 @@ const set = (obj, path, value)=>{
 }
 
 //Pass either an error object or an offset for the trace.
-const getTrace = (arg = 0)=>{
-	const stackline = (arg instanceof Error)
-		? arg.stack.split('\n')[1]
-		: (new Error()).stack.split('\n')[Number(arg) + 2];
+const getTrace = (offsetOrError = 0)=>{
+	const stackline = (offsetOrError instanceof Error)
+		? offsetOrError.stack.split('\n')[1]
+		: (new Error()).stack.split('\n')[Number(offsetOrError) + 2];
 	let name, loc = stackline.replace('at ', '').trim();
 	const res = /(.*?) \((.*?)\)/.exec(loc);
 	if(res){ name = res[1]; loc = res[2]; }
