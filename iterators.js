@@ -8,4 +8,21 @@ const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
 const findKey = (obj,fn)=>Object.keys(obj).find((key)=>fn(obj[key],key));
 const sample = (obj)=>obj[Object.keys(obj)[Math.floor(Object.keys(obj).length*Math.random())]];
 
-module.exports = {map,flatMap,reduce,filter,construct,cluster,times};
+
+/***********************/
+
+const max = (obj, fn)=>{
+	return Object.keys(obj).reduce((acc, key)=>{
+		const val = obj[key];
+		const res = fn(val, key);
+		return (res > acc[1]) ? [val,res] : acc;
+	}, [null, Number.MIN_SAFE_INTEGER])[0];
+};
+
+const sample = (arr, count=1)=>{
+	const temp = (s=new Set())=>{
+		s.add(arr[Math.floor(arr.length*Math.random())]);
+		return (s.size == count) ? s.values() : temp(a);
+	}
+	return temp();
+};
