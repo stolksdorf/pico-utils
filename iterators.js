@@ -19,10 +19,7 @@ const max = (obj, fn)=>{
 	}, [null, Number.MIN_SAFE_INTEGER])[0];
 };
 
-const sample = (arr, count=1)=>{
-	const temp = (s=new Set())=>{
-		s.add(arr[Math.floor(arr.length*Math.random())]);
-		return (s.size == count) ? s.values() : temp(a);
-	}
-	return temp();
+const sample = (arr, count=1, r=new Set())=>{
+	r.add(arr[Math.floor(arr.length*Math.random())]);
+	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
 };
