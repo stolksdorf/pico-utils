@@ -6,8 +6,10 @@ const construct = (obj,fn)=>Object.keys(obj).reduce((a,key)=>{const [k,v]=fn(obj
 const cluster = (obj, fn)=>Object.keys(obj).reduce((a,k)=>{const r=fn(obj[k],k);if(!a[r]){a[r]=[]};a[r].push(obj[k]);return a;},{});
 const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
 const findKey = (obj,fn)=>Object.keys(obj).find((key)=>fn(obj[key],key));
-const sample = (obj)=>obj[Object.keys(obj)[Math.floor(Object.keys(obj).length*Math.random())]];
-
+const sample = (arr, count=1, r=new Set())=>{
+	r.add(arr[Math.floor(arr.length*Math.random())]);
+	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
+};
 
 /***********************/
 
@@ -19,7 +21,4 @@ const max = (obj, fn)=>{
 	}, [null, Number.MIN_SAFE_INTEGER])[0];
 };
 
-const sample = (arr, count=1, r=new Set())=>{
-	r.add(arr[Math.floor(arr.length*Math.random())]);
-	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
-};
+
