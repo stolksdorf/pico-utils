@@ -1,40 +1,5 @@
 # pico-utils
-Tiny version of Lodash-esque utils
-
-
-## iterators
-
-map
-flatMap
-reduce
-filter
-construct
-times
-
-
-
-## string
-
-snakeCase
-titleCase
-kebobCase
-camelCase
-
-
-## numbers
-
-round
-clamp
-rand
-
-
-## async
-
-wait
-loop
-
-#### `sequence(obj, func)`
-Iterates over the object (or array)
+Tiny version of Lodash-esque utils. A bunch of one-liners (ish), you can copy and drop into your project as you need 'em. Nothing to install, just copy and paste.
 
 
 
