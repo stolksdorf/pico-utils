@@ -10,7 +10,10 @@ const pack = async (bundler)=>new Promise((res, rej)=>bundler.bundle((err, buf)=
 const getHTML = (bundle, props)=>`<main id='root'>${ReactDOMServer.renderToString(React.createElement(eval(`module=undefined;${bundle};global.Root`), props))}</main>`;
 const getHydrate = (props)=>`require('react-dom').hydrate(require('react').createElement(Root, ${JSON.stringify(props)}),document.getElementById('root'));`;
 const getLibs = async ()=>{if(!LibsCache){ LibsCache = await pack(browserify().require(Libs).transform('uglifyify', { global : true }));}; return LibsCache;};
-const postFilter = (id, filepath)=>(filepath.indexOf('node_modules') === -1) ? true : (Libs.push(id) && false);
+const postFilter = (id, filepath)=>{
+	if(!filepath) throw `Can not find module '${id}'`;
+	return (filepath.indexOf('node_modules') === -1) ? true : (Libs.push(id) && false);
+}
 const getBundler = (entryPath, opts = {})=>{
 	Libs = ['react', 'react-dom'];
 	return browserify({ standalone : 'Root', postFilter, ...opts })
