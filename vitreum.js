@@ -1,30 +1,36 @@
 // This is a tiny version of my React rendering library vitreum
 // Produces ready-to-serve HTML strings from a single React component.
 
-// npm i babelify react-dom react browserify @babel/core @babel/preset-react
-
+// npm i babelify react-dom react browserify uglifyify @babel/core @babel/preset-react
 
 const ReactDOMServer = require('react-dom/server'), React = require('react'), browserify = require('browserify');
 
-const pack = (bundler)=>new Promise((res, rej)=>bundler.bundle((err, buf)=>err ? rej(err) : res(buf.toString())));
-const getBundler = (componentPath, opts = {})=>{
-	return browserify({ standalone : 'Root', cache : {}, ...opts }).external('react').require(componentPath)
-		.transform('babelify', { presets : ['@babel/preset-react'] });
+let Libs, LibsCache;
+const pack = async (bundler)=>new Promise((res, rej)=>bundler.bundle((err, buf)=>err ? rej(err) : res(buf.toString())));
+const getHTML = (bundle, props)=>`<main id='root'>${ReactDOMServer.renderToString(React.createElement(eval(`module=undefined;${bundle};global.Root`), props))}</main>`;
+const getHydrate = (props)=>`require('react-dom').hydrate(require('react').createElement(Root, ${JSON.stringify(props)}),document.getElementById('root'));`;
+const getLibs = async ()=>{if(!LibsCache){ LibsCache = await pack(browserify().require(Libs).transform('uglifyify', { global : true }));}; return LibsCache;};
+const postFilter = (id, filepath)=>(filepath.indexOf('node_modules') === -1) ? true : (Libs.push(id) && false);
+const getBundler = (entryPath, opts = {})=>{
+	Libs = ['react', 'react-dom'];
+	return browserify({ standalone : 'Root', postFilter, ...opts })
+		.require(entryPath).transform('babelify', { presets : ['@babel/preset-react'] });
 };
-let libs;
-const render = async (bundler, props)=>{
+const collect = async (bundler, props)=>{
 	const bundle = await pack(bundler);
-	if(!libs) libs = await pack(browserify().require(['react', 'react-dom']));
-	return `<html>
-	<body><main id='root'>${ReactDOMServer.renderToString(React.createElement(eval(`module=undefined;${bundle};global.Root`), props))}</main></body>
-	<script>${libs};${bundle}</script>
-	<script>require('react-dom').hydrate(require('react').createElement(Root, ${JSON.stringify(props)}),document.getElementById('root'));</script>
-	</html>`;
+	return {
+		bundle : `${bundle};${getHydrate(props)}`,
+		libs   : await getLibs(),
+		html   : getHTML(bundle, props),
+	};
 };
-const build = async (componentPath, props = {})=>render(getBundler(componentPath, props), props);
-const dev = async (componentPath, props, task = (html)=>{})=>{
-	const go = async ()=>task(await render(bundler, props));
-	const bundler = getBundler(componentPath, props, { debug : true }).plugin('watchify').on('update', go);
-	go();
+
+const build = async (entryPath, props, opts = {})=>await collect(getBundler(entryPath, opts), props);
+const dev = (entryPath, props, task = ({ bundle, html, libs })=>{}, opts={})=>{
+	const run = async ()=>task(await collect(bundler, props));
+	const bundler = getBundler(entryPath, { debug : true, cache : {}, ...opts }).plugin('watchify').on('update', run);
+	run();
 };
-module.exports = { build, dev };
+const render = ({ head, html, bundle, libs })=>`<html><head>${head}</head><body>${html}</body><script>${libs}</script><script>${bundle}</script></html>`;
+
+module.exports = {dev, build, render};
