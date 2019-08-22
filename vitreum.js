@@ -3,7 +3,21 @@
 
 // npm i babelify react-dom react browserify uglifyify @babel/core @babel/preset-react
 
-const ReactDOMServer = require('react-dom/server'), React = require('react'), browserify = require('browserify');
+/*
+Usage: 
+
+const { bundle, html, libs } = await build('./src/main.jsx', {props : {url : '/'});
+const fullHTML = render({bundle, html, libs});
+
+build('./src/main.jsx', {props : {url : '/'}, libs : false, dev : ({ bundle, libs, html })=>{
+    const fullHTML = render({bundle, html, libs});
+    console.log('rebuilt!');
+}});
+*/
+
+
+
+const ReactDOMServer = require('react-dom/server'), React = require('react'), browserify = require('browserify'), sourceMaps = require('source-map-support');
 
 let LibsList;
 const pack       = async (bundler)=>new Promise((res, rej)=>bundler.bundle((err, buf)=>err ? rej(err) : res(buf.toString())));
@@ -14,13 +28,14 @@ const getBundler = (entryPoint, opts = {})=>browserify({ standalone : 'Root', po
 const postFilter = (id, path)=>{if(!path){throw `Can not find module '${id}'`;} return (path.indexOf('node_modules') === -1) ? true : (LibsList.push(id) && false); };
 
 const defaultOpts = {
-	libs  : true,
-	ssr   : true,
-	dev   : false, //pass a function to run dev tasks
-	props : {}
+	libs   : true,
+	ssr    : true,
+	dev    : false, //pass a function to run dev tasks
+	props  : {}
 };
 const build = async (entryPoint, opts={})=>{
 	opts = {...defaultOpts, ...opts};
+	if(!!opts.dev) sourceMaps.install();
 	let bundler = getBundler(entryPoint, { debug : !!opts.dev })
 	const execute = async ()=>{
 		LibsList = ['react', 'react-dom']
