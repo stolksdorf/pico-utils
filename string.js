@@ -5,6 +5,7 @@ const camelCase = (text)=>text.replace(/^([A-Z])|[\s-_]+(\w)/g, (_, a, b)=>b?b.t
 
 // Get all regex matches
 const execAll = (rgx, str)=>{let m,r=[]; while (m=rgx.exec(str)){r.push(m[1]);}; return r;};
-      
+
+const between = (str,start,end)=>str.match(new RegExp(start+"(.*)"+end))[1];
       
 //format money?
