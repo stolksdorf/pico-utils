@@ -1,6 +1,7 @@
 const map = (obj,fn)=>Object.keys(obj).map((key)=>fn(obj[key],key));
 const reduce = (obj,fn,init)=>Object.keys(obj).reduce((a,key)=>fn(a,obj[key],key),init);
 const flatMap = (obj,fn)=>Object.keys(obj).flatMap((key)=>fn(obj[key],key));
+const mapValues = (obj,fn)=>Object.keys(obj).reduce((a,k)=>{a[k]=fn(obj[key],key);return a;},{});
 
 const transform = (obj, fn)=>Object.keys(obj).reduce((acc,k)=>{acc[k]=fn(obj[k],k);return acc;}, Array.isArray(obj)?[]:{});
 const construct = (obj,fn)=>Object.keys(obj).reduce((a,key)=>{const [k,v]=fn(obj[key],key);a[k]=v;return a;},{});
