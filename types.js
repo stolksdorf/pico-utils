@@ -59,3 +59,31 @@ Type.opt = (type)=>(val, name)=>typeof val == 'undefined' || Type(type, val, nam
 Type.or = (...types)=>(val)=>types.some((type)=>Type.is(type, val))
 
 module.exports = Type;
+
+
+/*
+
+try{
+	Type(UserType, {
+		email : 'scott.tolksdorf@gmail.com',
+		post_count : 9,
+		tags : ['yo', 'foo'],
+		posts : [
+			{
+				title : 'hey',
+				read : ()=>{}
+			},
+		],
+		age : 31,
+		flagged : false,
+		created : 12343453465,
+		location : {
+			lat : 4,
+			lng : 60
+		}
+	})
+}catch(err){
+	console.log('ERROR');
+	console.log(err);
+}
+*/
