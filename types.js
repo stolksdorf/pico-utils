@@ -28,15 +28,17 @@ const isPlainObject = (obj)=>typeof obj == 'object' && obj.constructor == Object
 const isNativeType = (func)=>/\[native code\]/.test(''+func);
 const getNativeName = (func)=>/function (\w+)\(\)/.exec(func+'')[1];
 
-const Type = (schema, arg, name='')=>{
+const Type = (schema)=>(val, name)=>Type.check(schema, val,name);
+
+Type.check = (schema, arg, name='')=>{
 	if(schema === '*') return true;
 	if(Array.isArray(schema)){
 		if(!Array.isArray(arg)) throw `${name} is not an array.`;
-		return arg.every((val, idx)=>Type(schema[0], val, `${name}[${idx}]`));
+		return arg.every((val, idx)=>Type.check(schema[0], val, `${name}[${idx}]`));
 	}
 	else if(isPlainObject(schema)){
 		if(!isPlainObject(arg)) throw `${name} is not an object.`;
-		return Object.entries(schema).every(([key,val])=>Type(val, arg[key], `${name}.${key}`));
+		return Object.entries(schema).every(([key,val])=>Type.check(val, arg[key], `${name}.${key}`));
 	}
 	else if(schema instanceof RegExp){
 		if(!schema.test(arg)) throw `${name} did pass regex.`;
@@ -54,17 +56,39 @@ const Type = (schema, arg, name='')=>{
 	return true;
 };
 
-Type.is = (type, val)=>{ try{ Type(type, val) }catch(err){return false;} return true;};
-Type.opt = (type)=>(val, name)=>typeof val == 'undefined' || Type(type, val, name);
+Type.is = (type, val)=>{ try{ Type.check(type, val) }catch(err){return false;} return true;};
+Type.opt = (type)=>(val, name)=>typeof val == 'undefined' || Type.check(type, val, name);
 Type.or = (...types)=>(val)=>types.some((type)=>Type.is(type, val))
 
 module.exports = Type;
 
 
-/*
+
+
+
+
+const GeoType = (val, name)=>{
+	Type.check({lat:Number, lng:Number}, val, name);
+	if(val.lat < -90 || val.lat > 90) return `${name}.lat has an invalid range`;
+	if(val.lng < -180 || val.lng > 180) return `${name}.lng has an invalid range`;
+}
+
+const UserType = Type({
+	email : /^.+@.+\..+$/,
+	post_count : Number,
+	tags : [String],
+	posts : [{
+		title : String,
+		read : Function
+	}],
+	age : (val)=>val > 0 && val < 130,
+	flagged : Type.opt(Boolean),
+	created : Type.or(Number, Date),
+	location: Type.opt(GeoType)
+})
 
 try{
-	Type(UserType, {
+	UserType({
 		email : 'scott.tolksdorf@gmail.com',
 		post_count : 9,
 		tags : ['yo', 'foo'],
@@ -86,4 +110,3 @@ try{
 	console.log('ERROR');
 	console.log(err);
 }
-*/
