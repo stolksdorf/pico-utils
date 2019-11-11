@@ -27,6 +27,7 @@ const UserType = {
 const isPlainObject = (obj)=>typeof obj == 'object' && obj.constructor == Object;
 const isNativeType = (func)=>/\[native code\]/.test(''+func);
 const getNativeName = (func)=>/function (\w+)\(\)/.exec(func+'')[1];
+const isEmpty = (val)=>val==='' || val===null || typeof val === 'undefined';
 
 const Type = (schema)=>(val, name)=>Type.check(schema, val,name);
 
@@ -57,7 +58,7 @@ Type.check = (schema, arg, name='')=>{
 };
 
 Type.is = (type, val)=>{ try{ Type.check(type, val) }catch(err){return false;} return true;};
-Type.opt = (type)=>(val, name)=>typeof val == 'undefined' || Type.check(type, val, name);
+Type.opt = (type)=>(val, name)=>isEmpty(val) || Type.check(type, val, name);
 Type.or = (...types)=>(val)=>types.some((type)=>Type.is(type, val))
 
 module.exports = Type;
