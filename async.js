@@ -11,4 +11,4 @@ const enqueue = (func)=>{
 	})
 };
 
-module.exports = {wait,loop,sequence};
+module.exports = {wait,loop,sequence, enqueue};

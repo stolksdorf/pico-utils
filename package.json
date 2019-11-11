@@ -1,0 +1,25 @@
+{
+  "name": "pico-utils",
+  "version": "1.0.0",
+  "description": "Tiny version of Lodash-esque utils. A bunch of one-liners (ish), you can copy and drop into your project as you need 'em. Nothing to install, just copy and paste.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "pico-check": "^1.3.0"
+  },
+  "scripts": {
+    "test": "pico-check",
+    "test:dev": "pico-check -w -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stolksdorf/pico-utils.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stolksdorf/pico-utils/issues"
+  },
+  "homepage": "https://github.com/stolksdorf/pico-utils#readme"
+}
