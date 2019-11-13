@@ -1,53 +1,67 @@
-const test = require('pico-check').skip();
+const test = require('pico-check');
 
 const fs = require('fs');
 
 const dbFilePath = './tests/temp.db.json';
 
-//fs.writeFileSync(dbFilePath, '[]');
+const db = require('../json.db.js')(dbFilePath);
 
-//const DB = require('../json.db.js')(dbFilePath);
-
-
+const wait = async (n,val)=>new Promise((r)=>setTimeout(()=>r(val), n));
 
 test('clear', async (t)=>{
-	DB.clear();
-	t.is(await DB.all(), [])
+	await db.clear();
+	t.is(await db.all(), [])
 });
 
 
 test('mass add', async (t)=>{
 
 	await Promise.all([
-		DB.remove(4),
-		DB.add({id: 4, a : 1}),
-		DB.add({b : 2}),
-		DB.add({c : 3}),
-		DB.update(4, {yo : true})
+		db.remove(4),
+		db.add({id: 4, a : 1}),
+		db.add({b : 2}),
+		db.add({c : 3}),
+		db.update(4, {yo : true})
 	]);
 
-	console.log(await DB.all());
+	const temp = await db.all()
+	t.is(temp.length, 3 );
+	t.is(await db.get(4), {id: 4, a : 1, yo : true} );
 });
 
 test('mass add/remove', async (t)=>{
-	await DB.clear();
+	await db.clear();
 
 	await Promise.all([
-		DB.update(1, {a : 1}),
-		DB.update(2, {b : 2}),
-		DB.update(3, {c : 3}),
-		DB.update(4, {yo : true})
+		db.update(1, {a : 1}),
+		db.update(2, {b : 2}),
+		db.update(3, {c : 3}),
+		db.update(4, {yo : true})
 	]);
 
 	await Promise.all([
-		DB.remove(1),
-		DB.remove(2),
-		DB.remove(3),
-		DB.remove(4)
+		db.remove(1),
+		db.remove(2),
+		db.remove(3),
+		db.remove(4)
 	]);
 
-	t.is(await DB.all(), [])
-});
+	t.is(await db.all(), [])
+}, {timeout : 10000});
+
+
+
+test('write, read, write', async (t)=>{
+	await db.clear();
+	await Promise.all([
+		db.add({id : 4, a : 1}),
+		db.get(4).then((val)=>{
+			return db.add({id : 5, b : val.a})
+		}),
+		db.update(4, {a : 'yo'})
+	])
+	t.is(await db.all(), [ { id: 4, a: 'yo' }, { id: 5, b: 1 } ])
+})
 
 
 

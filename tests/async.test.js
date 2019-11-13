@@ -1,24 +1,23 @@
 const test = require('pico-check');
-const {wait, enqueue, loop, sequence} = require('../async.js');
+const {wait, enqueue, loop, sequence, debounce} = require('../async.js');
 
+
+const spd = 1; //how fast the tests will run
 
 test.group('enqueue', (test)=>{
 
 	test('basic', async (t)=>{
 		let res = [], res2 = [];
-		const go = (time, str)=>wait(time).then(()=>{
-			res.push(str);
-		});
 
-		const a = ()=>go(100, 'a').then(()=>res2.push('a'));
-		const b = ()=>go(300, 'b').then(()=>res2.push('b'));
-		const c = ()=>go(200, 'c').then(()=>res2.push('c'));
+		const a = enqueue(()=>wait(10 * spd).then(()=>res.push('a')))
+			.then(()=>res2.push('a'));
+		const b = enqueue(()=>wait(30 * spd).then(()=>res.push('b')))
+			.then(()=>res2.push('b'));
+		const c = enqueue(()=>wait(20 * spd).then(()=>res.push('c')))
+			.then(()=>res2.push('c'));
 
-		await Promise.all([
-			enqueue(a, 'a'),
-			enqueue(b, 'b'),
-			enqueue(c, 'c')
-		])
+
+		await Promise.all([a,b,c])
 
 		t.is(res, ['a', 'b', 'c']);
 		t.is(res2, ['a', 'b', 'c']);
@@ -30,14 +29,14 @@ test.group('enqueue', (test)=>{
 		let res = [];
 
 		const a = enqueue(async ()=>{
-			await wait(100);
+			await wait(10 * spd);
 			res.push('a')
 		}).then(async ()=>{
-			await wait(500);
+			await wait(50 * spd);
 			res.push('c')
 		})
 		const b = enqueue(async ()=>{
-			await wait(200);
+			await wait(20 * spd);
 			res.push('b');
 		})
 
@@ -49,14 +48,14 @@ test.group('enqueue', (test)=>{
 		let res = [];
 
 		const a = enqueue(async ()=>{
-			await wait(100);
+			await wait(10 * spd);
 			res.push('a')
 			throw 'c';
 		}).catch((err)=>{
 			res.push(err)
 		})
 		const b = enqueue(async ()=>{
-			await wait(200);
+			await wait(20 * spd);
 			res.push('b');
 		});
 		await Promise.all([ a,b ]);
@@ -64,6 +63,40 @@ test.group('enqueue', (test)=>{
 
 	})
 
+});
+
+test.group('debounce', (test)=>{
+	test('basic', async (t)=>{
+		const res = [];
+		const time = 30
+		const go = (val)=>debounce(()=>{
+			res.push(val)
+		}, time);
+
+		go(1);go(2);go(3);go(4);
+		await wait(time + 10);
+
+		t.is(res, [4]);
+	});
+
+	test('reset', async (t)=>{
+		const res = [];
+		const time = 30;
+		const go = (val)=>debounce(()=>{
+			res.push(val)
+		}, time);
+
+		go(1);
+		await wait(time - 5);
+		go(2);
+		await wait(time - 5);
+		go(3);
+		await wait(time - 5);
+		go(4);
+		await wait(time + 5);
+
+		t.is(res, [4]);
+	});
 })
 
 

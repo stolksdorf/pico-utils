@@ -1,21 +1,32 @@
 const fs = require('fs');
+const {readFile, writeFile} = fs.promises;
 
-module.exports = (filepath, shouldWatch=true)=>{
+module.exports = (filepath, shouldWatch=false)=>{
 	let data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+
+	const debounce = function(fn, t=16){ clearTimeout(this.clk); this.clk = setTimeout(fn, t); };
+	const enqueue = function(fn){
+		return new Promise((rsv, rej)=>{
+			this.queue = (this.queue || Promise.resolve()).then(()=>new Promise((done)=>{
+				fn().then(rsv).catch(rej).finally(done);
+			}));
+		});
+	};
 	const save = async (val)=>{
 		data = val;
-		return fs.promises.writeFile(filepath, JSON.stringify(data, null, '\t'));
+		return writeFile(filepath, JSON.stringify(data, null, '\t'));
+	};
+	if(shouldWatch){
+		fs.watch(filepath, ()=>{
+			debounce(async ()=>{
+				try{ data = JSON.parse((await readFile(filepath, 'utf8'))); }catch(err){}
+			});
+		});
 	}
-	if(shouldWatch) fs.watch(filepath, async ()=>{
-		//can be made sync
-		try{ data = JSON.parse((await fs.promises.readFile(filepath, 'utf8'))); }catch(err){}
-	});
-
 	const db = {
 		query  : async (fn)=>data.filter(fn),
 		all    : async ()=>data,
 		get    : async (id)=>data.find((x)=>x.id==id),
-
 		set    : async (x)=>save(x),
 		clear  : async ()=>save([]),
 		add    : async (obj)=>save(data.concat(obj)).then(()=>obj),
@@ -26,6 +37,9 @@ module.exports = (filepath, shouldWatch=true)=>{
 			data[idx] = {...data[idx], ...obj};
 			return save(data).then(()=>data[idx]);
 		}
-	}
-	return db;
+	};
+	return Object.entries(db).reduce((acc, [key, fn])=>{
+		acc[key] = (...args)=>enqueue(()=>fn(...args));
+		return acc;
+	},{})
 };
