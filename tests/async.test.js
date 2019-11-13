@@ -29,19 +29,24 @@ test.group('enqueue', (test)=>{
 		let res = [];
 
 		const a = enqueue(async ()=>{
-			await wait(10 * spd);
+			await wait(20 * spd);
 			res.push('a')
 		}).then(async ()=>{
 			await wait(50 * spd);
-			res.push('c')
+			res.push('d')
 		})
 		const b = enqueue(async ()=>{
-			await wait(20 * spd);
+			await wait(10 * spd);
 			res.push('b');
+		}).then(async ()=>{
+			await wait(5 * spd);
+			res.push('c')
 		})
 
 		await Promise.all([ a,b ]);
-		t.is(res, ['a', 'b', 'c']);
+
+
+		t.is(res, ['a', 'b', 'c', 'd']);
 	}, {timeout : 3000});
 
 	test('errors', async (t)=>{
