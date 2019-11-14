@@ -2,7 +2,8 @@ const fs = require('fs');
 const {readFile, writeFile} = fs.promises;
 
 module.exports = (filepath, shouldWatch=false)=>{
-	let data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+	let data = [];
+	try{data = JSON.parse(fs.readFileSync(filepath, 'utf8'));}catch(err){}
 
 	const debounce = function(fn, t=16){ clearTimeout(this.clk); this.clk = setTimeout(fn, t); };
 	const enqueue = function(fn){
