@@ -28,14 +28,26 @@ const set = (obj, path, value)=>{
 	return dig(obj, makePath(path));
 }
 
-//Pass either an error object or an offset for the trace.
-const getTrace = (offsetOrError = 0)=>{
-	const stackline = (offsetOrError instanceof Error)
-		? offsetOrError.stack.split('\n')[1]
-		: (new Error()).stack.split('\n')[Number(offsetOrError) + 2];
-	let name, loc = stackline.replace('at ', '').trim();
-	const res = /(.*?) \((.*?)\)/.exec(loc);
-	if(res){ name = res[1]; loc = res[2]; }
-	const [_, filename, line, col] = /(.*?):(\d*):(\d*)/.exec(loc);
-	return { filename, name, line, col };
-}
+const _internalPaths = Object.keys(process.binding('natives')).concat(['bootstrap_node', 'node']).map((name) => `${name}.js`);
+const getStack = (err)=>{
+	return err.stack.split('\n').reduce((stack, raw)=>{
+		const [_, name, file, line, col] =
+			/    at (.*?) \((.*?):(\d*):(\d*)\)/.exec(raw) || /    at ()(.*?):(\d*):(\d*)/.exec(raw) || [];
+		if(!!file && !_internalPaths.includes(file)){
+			stack.push({name, file:file.replace(process.cwd(), '').slice(1), line:Number(line), col:Number(col), raw})
+		}
+		return stack;
+	}, []);
+};
+
+const getTrace = (offset=0)=>{
+	const stack = (new Error()).stack.split('\n').reduce((stack, raw)=>{
+		const [_, name, file, line, col] =
+			/    at (.*?) \((.*?):(\d*):(\d*)\)/.exec(raw) || /    at ()(.*?):(\d*):(\d*)/.exec(raw) || [];
+		if(file) stack.push({
+			name, file : file.replace(process.cwd(), '').slice(1), line : Number(line), col  : Number(col), raw
+		});
+		return stack;
+	}, []).slice(offset);
+	return stack[0] || {};
+};
