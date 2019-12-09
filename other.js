@@ -28,6 +28,11 @@ const set = (obj, path, value)=>{
 	return dig(obj, makePath(path));
 }
 
+const cookies = document.cookie.split(';').reduce((res, c) => {
+	const [key, val] = c.trim().split('=').map(decodeURIComponent)
+	try { return {...res, [key]: JSON.parse(val) } } catch (e) { return {...res, [key]: val } }
+}, {});
+
 const _internalPaths = Object.keys(process.binding('natives')).concat(['bootstrap_node', 'node']).map((name) => `${name}.js`);
 const getStack = (err)=>{
 	return err.stack.split('\n').reduce((stack, raw)=>{
