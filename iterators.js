@@ -1,4 +1,6 @@
 const map = (obj,fn)=>Object.keys(obj).map((key)=>fn(obj[key],key));
+const map = (obj,fn)=>Object.entries(obj).map(([k,v])=>fn(v,k));
+
 const reduce = (obj,fn,init)=>Object.keys(obj).reduce((a,key)=>fn(a,obj[key],key),init);
 const flatMap = (obj,fn)=>Object.keys(obj).flatMap((key)=>fn(obj[key],key));
 const mapValues = (obj,fn)=>Object.keys(obj).reduce((a,k)=>{a[k]=fn(obj[key],key);return a;},{});
@@ -10,10 +12,13 @@ const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
 const findKey = (obj,fn)=>Object.keys(obj).find((key)=>fn(obj[key],key));
 const filter = (obj,fn)=>Object.keys(obj).reduce((a,key)=>!!fn(obj[key],key)?a.concat(obj[key]):a,[]);
 const cluster = (obj, fn)=>Object.keys(obj).reduce((a,k)=>{const r=fn(obj[k],k);if(!a[r]){a[r]=[]};a[r].push(obj[k]);return a;},{});
+
+const pluck = (arr)=>arr[Math.floor(Math.random()*arr.length)];
 const sample = (arr, count=1, r=new Set())=>{
 	r.add(arr[Math.floor(arr.length*Math.random())]);
 	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
 };
+
 
 /***********************/
 
