@@ -7,5 +7,7 @@ const camelCase = (text)=>text.replace(/^([A-Z])|[\s-_]+(\w)/g, (_, a, b)=>b?b.t
 const execAll = (rgx, str)=>{let m,r=[]; while (m=rgx.exec(str)){r.push(m[1]);}; return r;};
 
 const between = (str,start,end)=>str.match(new RegExp(start+"(.*)"+end))[1];
+
+const shortid = (n=7)=>Array.from(new Array(n*1),(v,i)=>'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'[Math.floor(Math.random()*64)]).join('');
       
 //format money?
