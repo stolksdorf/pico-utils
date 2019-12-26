@@ -2,9 +2,12 @@ const map = (obj,fn)=>Object.keys(obj).map((key)=>fn(obj[key],key));
 const map = (obj,fn)=>Object.entries(obj).map(([k,v])=>fn(v,k));
 
 const reduce = (obj,fn,init)=>Object.keys(obj).reduce((a,key)=>fn(a,obj[key],key),init);
+const reduce = (obj,fn,init)=>Object.entries(obj).reduce((a,[k,v])=>fn(a,v,k),init);
+
 const flatMap = (obj,fn)=>Object.keys(obj).flatMap((key)=>fn(obj[key],key));
 const mapValues = (obj,fn)=>Object.keys(obj).reduce((a,k)=>{a[k]=fn(obj[key],key);return a;},{});
 
+const sum = (obj,fn)=>Object.entries(obj).reduce((a,[k,v])=>a+fn(v,k),0);
 const transform = (obj, fn)=>Object.keys(obj).reduce((acc,k)=>{acc[k]=fn(obj[k],k);return acc;}, Array.isArray(obj)?[]:{});
 const construct = (obj,fn)=>Object.keys(obj).reduce((a,key)=>{const [k,v]=fn(obj[key],key);a[k]=v;return a;},{});
 const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
