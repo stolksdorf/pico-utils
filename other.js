@@ -10,6 +10,12 @@ const getArgs = (processArr = process.argv.slice(2))=>{
 	}, {args:[]});
 };
 
+const hasFlag = (flag)=>!!process.argv.find(x=>x==`--${flag}`);
+const isDev = !!process.argv.find(x=>x=='--dev');
+const isProd = !!process.argv.find(x=>x=='--prod');
+
+const chalk = Object.entries({bright:'\x1b[1m',dim:'\x1b[2m',red:'\x1b[31m',green:'\x1b[32m',yellow:'\x1b[33m',blue:'\x1b[34m',magenta:'\x1b[35m',cyan:'\x1b[36m',white:'\x1b[37m'}).reduce((acc, [name, val])=>{acc[name] = (txt)=>val+txt+'\x1b[0m';return acc;},{});
+
 
 
 //set && get
