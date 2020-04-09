@@ -11,6 +11,18 @@ const enqueue = function(fn){
 	});
 };
 
+function Emitter(){
+	let fns = {};
+	return {
+		on : (evt,fn)=>fns[evt]=(fns[evt]||[]).concat(fn),
+		off : (evt,fn)=>fns[evt]=(fns[evt]||[]).filter((_fn)=>_fn!==fn),
+		emit : (evt, ...data)=>{
+			(fns[evt]||[]).map((fn)=>fn(...data));
+			(fns['*']||[]).map((fn)=>fn(...data));
+		},
+	}
+};
+
 module.exports = {
 	wait,loop,sequence,enqueue,debounce
 };
