@@ -18,7 +18,7 @@ function Emitter(){
 		off : (evt,fn)=>fns[evt]=(fns[evt]||[]).filter((_fn)=>_fn!==fn),
 		emit : (evt, ...data)=>{
 			(fns[evt]||[]).map((fn)=>fn(...data));
-			(fns['*']||[]).map((fn)=>fn(...data));
+			(fns['*']||[]).map((fn)=>fn(evt, ...data));
 		},
 	}
 };
