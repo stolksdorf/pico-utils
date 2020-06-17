@@ -23,6 +23,19 @@ const chalk = Object.entries({
 }).reduce((acc, [name, id])=>{ return {...acc, [name]:(txt)=>`\x1b[${id}m${txt}\x1b[0m`}}, {});
 
 
+const memoize = (fn)=>{
+	let cache= {};
+	const newFunc = (...args)=>{
+		const key = JSON.stringify(args);
+		if(cache[key]) return cache[key];
+		const res = fn(...args);
+		cache[key] = res;
+		return res;
+	}
+	newFunc.clear = ()=>cache={};
+	return newFunc;
+};
+
 
 //set && get
 
