@@ -29,10 +29,10 @@ request.del = request.bind(null, 'DELETE');
 request.put = request.bind(null, 'PUT');
 
 /**** Simple Static Server ****/
-const http= require('http');
-const url=require('url');
-const fs =require('fs');
-const path =require('path');
+const http = require('http');
+const url  = require('url');
+const fs   = require('fs');
+const path = require('path');
 
 const server = (root = '', port = 8000)=>{
 	const types = { '.ico': 'image/x-icon','.html': 'text/html','.js': 'text/javascript','.json': 'application/json','.css': 'text/css','.png': 'image/png','.jpg': 'image/jpeg','.wav': 'audio/wav','.mp3': 'audio/mpeg','.svg': 'image/svg+xml'};
@@ -58,4 +58,3 @@ const server = (root = '', port = 8000)=>{
 	}).listen(parseInt(port));
 	console.log(`Static server listening on port ${port}`);
 };
-
