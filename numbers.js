@@ -4,6 +4,9 @@ const clamp = (val, min, max)=>{
 	if(val>max) return max;
 	return val;
 };
+
+const clamp = (val, min, max)=>[val, min, max].sort((a,b)=>a-b)[1];
+
 const rand = (min=10, max)=>{
 	if(!max){max=min;min=0}
 	return Math.floor(Math.random()*(max-min+1))+min;
