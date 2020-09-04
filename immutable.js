@@ -1,5 +1,10 @@
 /* Functions to doing immutable operations */
 
+// Add in this: https://github.com/fuzetsu/mergerino
+
+
+
+
 const remove = (arr, idx)=>{
 	return arr.slice(0,idx).concat(arr.slice(idx+1))
 }
