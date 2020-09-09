@@ -12,5 +12,17 @@ const rand = (min=10, max)=>{
 	return Math.floor(Math.random()*(max-min+1))+min;
 };
 
+const weightedRandom = (obj)=>{
+	const keys = Object.keys(obj), sum = Object.values(obj).reduce((a,x)=>a+x,0);
+	const percents = Object.values(obj).map(x=>x/sum);
+	return ()=>{
+		let i, sum=0, r= Math.random();
+		for(i in percents){
+			sum += percents[i];
+			if(r <= sum) return keys[i];
+		}
+	}
+};
+
 
 module.exports = {round,clamp,rand};
