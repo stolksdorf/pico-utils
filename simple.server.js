@@ -3,7 +3,6 @@ const url = require('url');
 const fs = require('fs').promises;
 const path = require('path');
 
-const chalk = require('../utils/chalk.js');
 
 const getMIMEType = (ext)=>{
 	const types = {
@@ -15,16 +14,17 @@ const getMIMEType = (ext)=>{
 		'.png': 'image/png',
 		'.jpg': 'image/jpeg',
 		'.jpeg': 'image/jpeg',
+		'.svg': 'image/svg+xml',
+
 		'.wav': 'audio/wav',
 		'.mp3': 'audio/mpeg',
-		'.svg': 'image/svg+xml',
+
 		'.pdf': 'application/pdf',
 		'.gif' : 'image/gif',
 		'.mpeg' : 'video/mpeg',
 		'.pdf' : 'application/pdf',
 		'.tar.gz' : 'application/x-tar',
 		'.tgz' : 'application/x-tar',
-		'.wav' : 'audio/wav',
 		'.zip' : 'application/zip',
 	};
 	return types[ext] || 'text/plain';
@@ -58,7 +58,7 @@ module.exports = (rootDir=process.cwd(), opts={})=>{
 			res.setHeader('Content-type', getMIMEType(ext) );
 			res.end(contents);
 		}).listen(parseInt(opts.port), ()=>{
-			console.log(chalk.cyan(`Server listening on port:`), opts.port);
+			console.log(`Server listening on port:`, opts.port);
 			resolve();
 		});
 	})
