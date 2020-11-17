@@ -22,6 +22,8 @@ const sample = (arr, count=1, r=new Set())=>{
 	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
 };
 
+const zip = (...arrs)=>arrs[0].map((_,i)=>arrs.map((arr)=>arr[i]))
+
 
 /***********************/
 
