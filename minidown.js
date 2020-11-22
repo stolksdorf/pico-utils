@@ -3,8 +3,6 @@
 - no code blocks
 - no tables
 */
-
-
 const minidown = (str)=>{
 	return Object.entries({
 		'(#+)(.*)' : (_,{length},a) =>`<h${length}>${a.trim()}</h${length}>`,
