@@ -4,15 +4,15 @@ const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('bin
 
 const qs = {
 	get : (url)=>Object.fromEntries((url.split('?')[1]||'').split('&').map((c) => c.trim().split('=').map(decodeURIComponent))),
-	set : (url, obj)=>url.split('?')[0] + '?' + map(obj, (v,k)=>`${k}=${encodeURIComponent(v)}`).join('&'),
+	set : (url, obj)=>url.split('?')[0] + '?' + Object.entries(obj).map(([v,k])=>`${k}=${encodeURIComponent(v)}`).join('&'),
 	add : (url, obj)=>qs.set(url, {...qs.get(url, obj), ...obj}),
 };
 
-const cookies = {
-	get : ()=>Object.fromEntries(document.cookie.split(';').map((c) => c.trim().split('=').map(decodeURIComponent))),
-	set : (name, val, opts={})=>document.cookie = `${name}=${val}; ${map(opts, (v,k)=>`${k}=${v}`).join('; ')}`,
-	del : (name)=>document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`,
-};
+	const cookies = {
+		get : ()=>Object.fromEntries(document.cookie.split(';').map((c) => c.trim().split('=').map(decodeURIComponent))),
+		set : (name, val, opts={})=>document.cookie = `${name}=${val}; ${Object.entries(opts).map(([v,k])=>`${k}=${v}`).join('; ')}`,
+		del : (name)=>document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`,
+	};
 
 const request = async (method, url, data={}, options={})=>{
 	const {headers, ...opts}=options;
