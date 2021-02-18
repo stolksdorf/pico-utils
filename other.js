@@ -9,6 +9,12 @@ const Emitter=()=>{
 	};
 };
 
+const getCaller = (offset=0)=>{
+	const stackline = (new Error()).stack.split('\n')[3 + offset];
+	const [_, name, file, line, col] = /    at (.*?) \((.*?):(\d*):(\d*)\)/.exec(stackline);
+	return { name, file, line:Number(line), col:Number(col) };
+}
+
 const getArgs = (processArr = process.argv.slice(2))=>{
 	return processArr.reduce((acc, arg)=>{
 		if(arg[0]=='-'){
