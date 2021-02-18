@@ -1,5 +1,6 @@
 const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('binary'));
 
+
 const qs = {
 	get : (url)=>Object.fromEntries((url.split('?')[1]||'').split('&').map((c) => c.trim().split('=').map(decodeURIComponent))),
 	set : (url, obj)=>url.split('?')[0] + '?' + Object.entries(obj).map(([v,k])=>`${k}=${encodeURIComponent(v)}`).join('&'),
@@ -19,16 +20,13 @@ const request = async (method, url, data={}, options={})=>{
 		method, headers: {'Content-Type':'application/json', ...headers},
 		body : method!='GET' ? JSON.stringify(data) : undefined,
 		...opts,
-	}).then((res)=>{
-		return Promise.any([res.json(), res.text(), res.blob()]).then(data=>{
-			res.data = data;
+	}).then(res=>{
+		return res.text().then(data=>{
+			try{res.data=JSON.parse(data);}catch(err){res.data=data;}
+			if(!res.ok) throw res;
 			return res;
 		})
-	})
-	.then((res)=>{
-		if(!res.ok) throw res;
-		return res;
-	})
+	});
 };
 request.get  = request.bind(null, 'GET');
 request.post = request.bind(null, 'POST');
