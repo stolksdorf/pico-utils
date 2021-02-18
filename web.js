@@ -1,5 +1,3 @@
-const map = (obj,fn)=>Object.entries(obj).map(([k,v])=>fn(v,k));
-
 const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('binary'));
 
 const qs = {
@@ -8,25 +6,42 @@ const qs = {
 	add : (url, obj)=>qs.set(url, {...qs.get(url, obj), ...obj}),
 };
 
-	const cookies = {
-		get : ()=>Object.fromEntries(document.cookie.split(';').map((c) => c.trim().split('=').map(decodeURIComponent))),
-		set : (name, val, opts={})=>document.cookie = `${name}=${val}; ${Object.entries(opts).map(([v,k])=>`${k}=${v}`).join('; ')}`,
-		del : (name)=>document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`,
-	};
+const cookies = {
+	get : ()=>Object.fromEntries(document.cookie.split(';').map((c) => c.trim().split('=').map(decodeURIComponent))),
+	set : (name, val, opts={})=>document.cookie = `${name}=${val}; ${Object.entries(opts).map(([v,k])=>`${k}=${v}`).join('; ')}`,
+	del : (name)=>document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`,
+};
 
 const request = async (method, url, data={}, options={})=>{
 	const {headers, ...opts}=options;
 	if(method=='GET') url = qs.add(url, data);
-	return await fetch(url, {
+	return fetch(url, {
 		method, headers: {'Content-Type':'application/json', ...headers},
 		body : method!='GET' ? JSON.stringify(data) : undefined,
 		...opts,
-	}).then((res)=>res.json());
+	}).then((res)=>{
+		return Promise.any([res.json(), res.text(), res.blob()]).then(data=>{
+			res.data = data;
+			return res;
+		})
+	})
+	.then((res)=>{
+		if(!res.ok) throw res;
+		return res;
+	})
 };
-request.get = request.bind(null, 'GET');
+request.get  = request.bind(null, 'GET');
 request.post = request.bind(null, 'POST');
-request.del = request.bind(null, 'DELETE');
-request.put = request.bind(null, 'PUT');
+request.del  = request.bind(null, 'DELETE');
+request.put  = request.bind(null, 'PUT');
+
+
+const isValidEmail = (email)=>{
+	return /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/.test(email)
+};
+
+
+module.exports = {qs, cookies, request, isValidEmail};
 
 /**** Simple Static Server ****/
 const http = require('http');
