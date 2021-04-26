@@ -34,6 +34,20 @@ request.del  = request.bind(null, 'DELETE');
 request.put  = request.bind(null, 'PUT');
 
 
+
+
+	function download(filename, text) {
+		//We manually create an invisible link tag, and set it's content to be our file
+		//Then we trigger a click action which will prompt it to download.
+		const element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('download', filename);
+		element.style.display = 'none';
+		document.body.appendChild(element);
+		element.click();
+		document.body.removeChild(element);
+	}
+
 const isValidEmail = (email)=>{
 	return /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/.test(email)
 };
