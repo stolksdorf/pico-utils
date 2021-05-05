@@ -14,3 +14,4 @@ const shortid = (n=8)=>Array.from(new Array(n*1),(v,i)=>'23456789abcdefghijkmnpq
 
 const shortid = ()=>Math.random().toString(32).substr(2);    
 
+const hash = (str)=>[...str].reduce((acc, char)=>{acc = ((acc<<5)-acc)+char.charCodeAt(0);return acc&acc; }, 0).toString(32);
