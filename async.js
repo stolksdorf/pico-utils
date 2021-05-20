@@ -3,6 +3,19 @@ const loop = async (fn)=>setTimeout(()=>loop(fn), await fn() || 1000);
 const sequence = async (obj, fn)=>Object.keys(obj).reduce((a,key)=>a.then((r)=>fn(obj[key], key, r)), Promise.resolve());
 const debounce = (fn, t=16)=>function(...args){clearTimeout(this.clk);this.clk=setTimeout(()=>fn(...args),t);};
 
+
+const cacheOnce = (func)=>{
+	let lastArgs, lastResult;
+	return (...args)=>{
+		const key = JSON.stringify(args);
+		if(lastArgs !== key){
+			lastArgs = key;
+			lastResult = func(...args);
+		}
+		return lastResult;
+	}
+}
+
 const enqueue = function(fn){
 	return new Promise((rsv, rej)=>{
 		this.queue = (this.queue || Promise.resolve()).then(()=>new Promise((done)=>{
