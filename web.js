@@ -2,7 +2,7 @@ const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('bin
 
 
 const qs = {
-	get : (url)=>Object.fromEntries((url.split('?')[1]||'').split('&').map((c) => c.trim().split('=').map(decodeURIComponent))),
+	get : (url)=>Object.fromEntries((url.split('?')[1]||'').split('&').map((c) => c.trim().split('=').map(decodeURIComponent).reverse())),
 	set : (url, obj)=>url.split('?')[0] + '?' + Object.entries(obj).map(([v,k])=>`${k}=${encodeURIComponent(v)}`).join('&'),
 	add : (url, obj)=>qs.set(url, {...qs.get(url, obj), ...obj}),
 };
