@@ -14,4 +14,33 @@ const shortid = (n=8)=>Array.from(new Array(n*1),(v,i)=>'23456789abcdefghijkmnpq
 
 const shortid = ()=>Math.random().toString(32).substr(2);    
 
+/*--------------------*/
+
+//TODO: run benchmark on these
+//algo vs. algo
+//for vs. array
+
 const hash = (str)=>[...str].reduce((acc, char)=>{acc = ((acc<<5)-acc)+char.charCodeAt(0);return acc&acc; }, 0).toString(32);
+
+const simpleHash = str => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash &= hash; // Convert to 32bit integer
+  }
+  return new Uint32Array([hash])[0].toString(36);
+};
+
+function hashCode(s) {
+    let h=0;
+    for(let i = 0; i < s.length; i++) 
+          h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+
+    return h;
+}
+
+function hashCode(str) {
+  return Array.from(str)
+    .reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
+}
