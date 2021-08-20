@@ -20,31 +20,5 @@ const shortid = ()=>Math.random().toString(32).substr(2);
 //algo vs. algo
 //for vs. array
 
-const hash = (str)=>[...str].reduce((acc, char)=>{acc = ((acc<<5)-acc)+char.charCodeAt(0);return acc&acc; }, 0).toString(32);
-
-hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
-
-const simpleHash = str => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash &= hash; // Convert to 32bit integer
-  }
-  return new Uint32Array([hash])[0].toString(36);
-};
-
-function hashCode(s) {
-    let h=0;
-    for(let i = 0; i < s.length; i++) 
-          h = Math.imul(31, h) + s.charCodeAt(i) | 0;
-
-    return h;
-}
-
-function hashCode(str) {
-  return Array.from(str)
-    .reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
-}
-
-TSH=s=>{for(var i=0,h=9;i<s.length;)h=Math.imul(h^s.charCodeAt(i++),9**9);return h^h>>>9}
+const hashOLD = (str)=>[...str].reduce((acc, char)=>{acc = ((acc<<5)-acc)+char.charCodeAt(0);return acc&acc; }, 0).toString(32);
+const hash = (s)=>{for(var i=0,h=9;i<s.length;)h=Math.imul(h^s.charCodeAt(i++),9**9);return (h^h>>>9).toString(32)};
