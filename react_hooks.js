@@ -1,3 +1,45 @@
+/* --- xo Flavor --- */
+
+
+const hasHistorySupport = !!(typeof window !== 'undefined' && window.history && window.history.pushState);
+const isRegularClick    = (event)=>event.button === 0 && !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+const UseRouter = (scope, initialRoute)=>{
+	const [currRoute, setCurrRoute] = scope.useState(initialRoute);
+	scope.useEffect(()=>{
+		if(!hasHistorySupport) return;
+		window.addEventListener('popstate', ()=>setCurrRoute(window.location.pathname));
+	},[]);
+	const navigate = (route)=>{
+		if(!hasHistorySupport) return window.location.pathname = route;
+		window.history.pushState({}, null, route);
+		setCurrRoute(route);
+	};
+	const hyperlink = (route)=>{
+		return (evt)=>{
+			if(!isRegularClick(evt)) return;
+			navigate(route);
+			evt.preventDefault();
+		};
+	};
+	return [currRoute, navigate, hyperlink];
+};
+
+
+const useLocalState = (scope, key, init)=>{
+	const [val, setVal] = scope.useState(init);
+	scope.useEffect(()=>{
+		try { setVal(JSON.parse(window.localStorage.getItem(key))); } catch (err){}
+	}, []);
+	return [val, (newVal)=>{
+		try{ window.localStorage.setItem(key, JSON.stringify(newVal)); } catch (err){}
+		setVal(newVal);
+	}];
+};
+
+
+
+
+/* --- React Flavor --- */
 
 const useLocalState = (init, key)=>{
 	if(!key) throw `Must set a 'key' for local state hook`;
