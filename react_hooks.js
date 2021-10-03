@@ -36,6 +36,17 @@ const useLocalState = (scope, key, init)=>{
 	}];
 };
 
+const useLocalState = (scope, key, init)=>{
+	const [val, setVal] = scope.useState(()=>{
+		try{ return JSON.parse(window.localStorage.getItem(key));
+		}catch(err){ return init; }
+	});
+	return [val, (newVal)=>{
+		try{ window.localStorage.setItem(key, JSON.stringify(newVal)); } catch (err){}
+		setVal(newVal);
+	}];
+};
+
 
 
 
