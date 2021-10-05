@@ -14,6 +14,14 @@ const shortid = (n=8)=>Array.from(new Array(n*1),(v,i)=>'23456789abcdefghijkmnpq
 
 const shortid = ()=>Math.random().toString(32).substr(2);    
 
+const template = (str, data={})=>{
+	return Object.entries(data).reduce((acc, [key, val])=>{
+		return acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), val)
+	}, str);
+};
+
+
+
 /*--------------------*/
 
 //TODO: run benchmark on these
