@@ -3,6 +3,10 @@ const loop = async (fn)=>setTimeout(()=>loop(fn), await fn() || 1000);
 const sequence = async (obj, fn)=>Object.keys(obj).reduce((a,key)=>a.then((r)=>fn(obj[key], key, r)), Promise.resolve());
 const debounce = (fn, t=16)=>function(...args){clearTimeout(this.clk);this.clk=setTimeout(()=>fn(...args),t);};
 
+const debounce = (fn, t=16)=>{ let timeout; return (...args)=>{clearTimeout(timeout); timeout=setTimeout(()=>fn(...args), t);}};
+const throttle = (fn, t=16)=>{ let timeout; return (...args)=>{ if(timeout){return;}  timeout=setTimeout(()=>{timeout=false;fn(...args)}, t);}}
+
+
 
 const cacheOnce = (func)=>{
 	let lastArgs, lastResult;
