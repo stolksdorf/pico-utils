@@ -22,6 +22,7 @@ const sample = (arr, count=1, r=new Set())=>{
 	return (r.size == count) ? Array.from(r) : sample(arr, count, r);
 };
 const weaveFunc = (arr, func)=>arr.reduce((acc, val, idx)=>(idx < arr.length-1) ? acc.concat(val, func(acc.length + 1)) : acc.concat(val),[]);
+const weave = (a1, a2)=>a2.reduce((r,_,i)=>r.concat(a1[i],a2[i]),[]).concat(a1[a1.length-1]);
 
 const zip = (...arrs)=>arrs[0].map((_,i)=>arrs.map((arr)=>arr[i]))
 
