@@ -22,7 +22,7 @@ const template = (str, data={})=>{
 
 
 const key = '0123456789abcdefghjkmnpqrstvwxyz';
-const toB32 = (num)=>(num >= 32) ? tob32(Math.floor(num/32)) + tob32(num-32) : key[num];
+const toB32 = (num)=>(num >= 32) ? toB32(Math.floor(num/32)) + toB32(num-32) : key[num];
 const fromB32 = (b32,r=0)=>(b32.length !== 1) ? fromB32(b32.slice(0,-1),r+1) + fromB32(b32.slice(-1),r) : key.indexOf(b32)*Math.pow(32,r);
 
 const toPicoDate = (date)=>toB32(date.getFullYear()-2020) + toB32(date.getMonth()+1) + toB32(date.getDate());
