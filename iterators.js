@@ -11,6 +11,7 @@ const sum = (obj,fn)=>Object.entries(obj).reduce((a,[k,v])=>a+fn(v,k),0);
 const transform = (obj, fn)=>Object.keys(obj).reduce((acc,k)=>{acc[k]=fn(obj[k],k);return acc;}, Array.isArray(obj)?[]:{});
 const construct = (obj,fn)=>Object.keys(obj).reduce((a,key)=>{const [k,v]=fn(obj[key],key);a[k]=v;return a;},{});
 const times = (n,fn)=>Array.from(new Array(n*1),(v,i)=>fn(i));
+const times = (n,fn)=>{let res=[];for(let i=0;i<n;i++){res.push(fn(i))};return res;};
 
 const findKey = (obj,fn)=>Object.keys(obj).find((key)=>fn(obj[key],key));
 const filter = (obj,fn)=>Object.keys(obj).reduce((a,key)=>!!fn(obj[key],key)?a.concat(obj[key]):a,[]);
