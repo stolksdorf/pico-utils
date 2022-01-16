@@ -1,0 +1,17 @@
+{
+	"configurations": {
+		"Extended" : {
+			"file_extensions": [ "js" ],
+			"custom_templates": {
+				"tags": {
+					"css": "scope:source.js.css",
+					"x": "scope:text.html.basic",
+					"js": "scope:source.js"
+				},
+				"comments": {
+					"js": "scope:source.js"
+				}
+			}
+		}
+	},
+}
