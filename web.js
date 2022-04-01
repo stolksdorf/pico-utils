@@ -1,5 +1,39 @@
 const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('binary'));
 
+//Simple isomorhpic Fetch
+const request = async (url, opts={})=>{
+	opts = {headers:{}, delay:0, ...opts};
+	opts.headers = {'Content-Type':'application/json', ...opts.headers};
+	if(opts.delay) await (new Promise(r=>setTimeout(r, opts.delay)));
+	if(typeof window === 'undefined'){
+		const https = require('https');
+		return new Promise((resolve, reject)=>{
+			let req = https.get(url, opts, (res) => {
+				res.data = '';
+				res.on('data', (d)=>res.data += d);
+				res.on('end', ()=>{
+					try{res.data=JSON.parse(res.data)}catch(err){}
+					res.status = res.statusCode;
+					res.ok = res.status >= 200 && res.status < 300;
+					if(!res.ok) return reject(res);
+					return resolve(res);
+				});
+			}).on('error', (err)=>{ req.data = err; reject(req); }).end();
+		})
+		//.then() (response.statusCode >= 300 && response.statusCode < 400 && hasHeader('location', response.headers))
+	}else{
+		return fetch(url, { method : 'GET', ...opts})
+			.then(res=>{
+				return res.text().then(data=>{
+					try{res.data=JSON.parse(data);}catch(err){res.data=data;}
+					if(!res.ok) throw res;
+					return res;
+				})
+			});
+	}
+};
+
+
 
 const qs = {
 	get : (url)=>Object.fromEntries((url.split('?')[1]||'').split('&').map((c) => c.trim().split('=').map(decodeURIComponent).reverse())),
