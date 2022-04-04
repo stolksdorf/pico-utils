@@ -1,5 +1,8 @@
 const decodeJWT = (token='')=>JSON.parse(atob(token.split('.')[1]).toString('binary'));
 
+
+const $ = Object.fromEntries([...document.querySelectorAll("[data-x]")].map(el=>[el.getAttribute('data-x'), el]));
+
 //Simple isomorhpic Fetch
 const request = async (url, opts={})=>{
 	opts = {headers:{}, delay:0, ...opts};
