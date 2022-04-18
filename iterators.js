@@ -25,7 +25,16 @@ const sample = (arr, count=1, r=new Set())=>{
 const weaveFunc = (arr, func)=>arr.reduce((acc, val, idx)=>(idx < arr.length-1) ? acc.concat(val, func(acc.length + 1)) : acc.concat(val),[]);
 const weave = (a1, a2)=>a2.reduce((r,_,i)=>r.concat(a1[i],a2[i]),[]).concat(a1[a1.length-1]);
 
-const zip = (...arrs)=>arrs[0].map((_,i)=>arrs.map((arr)=>arr[i]))
+const zip = (...arrs)=>arrs[0].map((_,i)=>arrs.map((arr)=>arr[i]));
+
+
+const isSame = (obj1, obj2)=>{
+	if(obj1 === obj2) return true;
+	if(typeof obj1 !== 'object' || typeof obj2 !== 'object') return false;
+	const keys1 = Object.keys(obj1), keys2 = Object.keys(obj2);
+	if(keys1.length !== keys2.length) return false;
+	return keys1.every((_,idx)=>isSame(obj1[keys1[idx]], obj2[keys2[idx]]));
+};
 
 
 /***********************/
