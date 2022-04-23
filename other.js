@@ -15,17 +15,11 @@ const getCaller = (offset=0)=>{
 	return { name, file, line:Number(line), col:Number(col) };
 }
 
-const getArgs = (processArr = process.argv.slice(2))=>{
-	return processArr.reduce((acc, arg)=>{
-		if(arg[0]=='-'){
-			let [key,val] = arg.replace(/-(-)?/, '').split('=');
-			acc[key] = typeof val == 'undefined' ? true : val;
-			return acc;
-		}
-		acc.args.push(arg);
-		return acc;
-	}, {args:[]});
-};
+const args = process.argv.slice(2).reduce((acc, part)=>{
+	const [_,key,__,val] = /--?(\w+)(=(\w+))?/.exec(part) || [];
+	key ? (acc[key] = val||true) : (acc.cmds.push(part));
+	return acc;
+}, {cmds:[]});
 
 const hasFlag = (flag)=>!!process.argv.find(x=>x==`--${flag}`);
 const isDev = !!process.argv.find(x=>x=='--dev');
