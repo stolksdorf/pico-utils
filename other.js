@@ -9,6 +9,19 @@ const Emitter=()=>{
 	};
 };
 
+
+const getCallStack = ()=>{
+	const _prepareStackTrace = Error.prepareStackTrace
+	Error.prepareStackTrace = (_, stack) => stack;
+	const stack = new Error().stack.slice(1);
+	Error.prepareStackTrace = _prepareStackTrace;
+	return stack;
+};
+const resolveFromCaller = (fp, offset=0)=>{
+	const callDir = Path.dirname(getCallStack()[2+offset].getFileName());
+	return require.resolve(fp, {paths:[callDir]});
+};
+
 const getCaller = (offset=0)=>{
 	const stackline = (new Error()).stack.split('\n')[3 + offset];
 	const [_, name, file, line, col] = /    at (.*?) \((.*?):(\d*):(\d*)\)/.exec(stackline);
